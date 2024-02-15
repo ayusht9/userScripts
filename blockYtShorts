@@ -1,0 +1,32 @@
+// ==UserScript==
+// @name         Block YouTube Shorts
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Block YouTube Shorts from appearing on the homepage
+// @author       ayusht9
+// @match        https://www.youtube.com/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Function to hide YouTube Shorts elements
+    function hideShorts() {
+        // Add more selectors as needed to block other elements related to YouTube Shorts
+        let shortsElements = document.querySelectorAll('[data-title="Shorts"]');
+        shortsElements.forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+
+    // Run the function on page load
+    window.addEventListener('load', function() {
+        hideShorts();
+    });
+
+    // Add an event listener for changes to the DOM (useful for dynamic content loading)
+    document.addEventListener('DOMSubtreeModified', function() {
+        hideShorts();
+    });
+})();
