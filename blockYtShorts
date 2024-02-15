@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Block YouTube Shorts
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Block YouTube Shorts from appearing on the homepage
 // @author       ayusht9
 // @match        https://www.youtube.com/*
@@ -18,6 +18,12 @@
         shortsElements.forEach(element => {
             element.style.display = 'none';
         });
+
+        // Hide the Shorts tab
+        let shortsTab = document.querySelector('[title="Shorts"]');
+        if (shortsTab) {
+            shortsTab.style.display = 'none';
+        }
     }
 
     // Run the function on page load
