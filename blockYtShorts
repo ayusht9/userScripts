@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Block YouTube Shorts
 // @namespace    http://tampermonkey.net/
-// @version      0.2
-// @description  Block YouTube Shorts from appearing on the homepage
+// @version      0.3
+// @description  Block YouTube Shorts from search results, homepage, and channel pages
 // @author       ayusht9
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -11,12 +11,10 @@
 (function() {
     'use strict';
 
-    // Function to hide YouTube Shorts elements
-    function hideShorts() {
-        // Add more selectors as needed to block other elements related to YouTube Shorts
-        let shortsElements = document.querySelectorAll('[data-title="Shorts"]');
-        shortsElements.forEach(element => {
-            element.style.display = 'none';
+    const hideShorts = () => {
+        // Hide Shorts in search results
+        Array.from(document.querySelectorAll('ytd-video-renderer ytd-thumbnail [aria-label="Shorts"]')).forEach(result => {
+            result.closest('ytd-video-renderer').style.display = 'none';
         });
 
         // Hide the Shorts tab
@@ -24,15 +22,40 @@
         if (shortsTab) {
             shortsTab.style.display = 'none';
         }
-    }
+
+        // Hide Shorts on homepage
+        Array.from(document.querySelectorAll('[data-title="Shorts"]')).forEach(element => {
+            element.style.display = 'none';
+        });
+
+        // Hide Shorts on channel pages
+        Array.from(document.querySelectorAll('ytd-grid-video-renderer [data-title="Shorts"]')).forEach(short => {
+            short.closest('ytd-grid-video-renderer').style.display = 'none';
+        });
+
+        // Remove Shorts links from search results
+        Array.from(document.querySelectorAll('a[href^="/shorts"]')).forEach(a => {
+            let parent = a.parentElement;
+
+            while (parent && (!parent.tagName.startsWith('YTD-') || parent.tagName === 'YTD-THUMBNAIL')) {
+                parent = parent.parentElement;
+            }
+
+            if (parent) {
+                parent.remove();
+            }
+        });
+    };
 
     // Run the function on page load
     window.addEventListener('load', function() {
         hideShorts();
     });
 
-    // Add an event listener for changes to the DOM (useful for dynamic content loading)
-    document.addEventListener('DOMSubtreeModified', function() {
+    // Use MutationObserver to observe specific elements for changes
+    const observer = new MutationObserver(() => {
         hideShorts();
     });
+
+    observer.observe(document.body, { subtree: true, childList: true });
 })();
