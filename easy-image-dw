@@ -1,0 +1,30 @@
+// ==UserScript==
+// @name         Easy Image Downloader
+// @namespace    http://yourwebsite.com
+// @version      1.0
+// @description  Opens image in new tab when Alt key + Left click is used, prompts to save image when Alt + Shift + Left click is pressed
+// @author       ayusht9
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+    
+    document.addEventListener('click', function(event) {
+        if (event.altKey && event.button === 0 && event.target.tagName === 'IMG') {
+            if (event.shiftKey) {
+                // Save Image Prompt (Alt + Shift + Left Click)
+                event.preventDefault();
+                var imageUrl = event.target.src;
+                var link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = '';
+                link.click();
+            } else {
+                // Open Image in New Tab (Alt + Left Click)
+                window.open(event.target.src, '_blank');
+            }
+        }
+    });
+})();
